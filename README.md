@@ -66,10 +66,7 @@ While cleaning in the last project we checked out the distribution in many colum
 We looked closer into the ingredients column since it will be important for our prediction.
 
 We have seen that many ingredients are written in their plural and singular forms. This underrepresents their prescence in recipes since their count is distributed as two different ingredients. Therefore, to fix this we decided to strip all letters "s" from the end of the ingredients. For example this combined 'egg' and 'eggs' into one column 'egg'. 
-<!-- Here are the first few rows of the cleaned dataframe:
-
-<iframe src="assets/sdatahead.html" width=900 height=210 frameBorder=0 title="cleaned dataset preview"></iframe> -->
-
+<!-- Here are the first few rows of the cleaned dataframe: <iframe src="assets/sdatahead.html" width=900 height=210 frameBorder=0 title="cleaned dataset preview"></iframe> -->
 <br>
 <br>
 
@@ -80,7 +77,6 @@ We will choose some _features_ that we think apply best to predicting `balance` 
 
 Keep in mind, if a _simple_ solution works as well as a complicated one the simple solution is preferred. Thats why we will start with few features and slowly add more checking for improved performance.
 
-<br>
 <br>
 
 ### Feature Selection
@@ -217,12 +213,7 @@ After trying many models and many hyperparamters we ended with a Random Forest C
 
 We got two types of results: very low precision with decent recall and accuracy, and mediocre precision with abismal recall and mediocre accuracy. Because the worst mistake we can make is to recommend someone an unbalanced recipe and tell them it is balanced, we are prioritizing precision and tuned or models to optimize that. This came at the expense of only capturing a small portion of all the balanced recipes in our dataset therefore missing out on a lot of healthy recommendations. It is hard to say if there are any patterns in the ones we did or did not capture but that would be cool to explore. Given the 4 input variables (3 considering n_ingredients could be engineered) did not have a ton of information that clearly or directly relates to the GDP from a theoretical perspective I believe the results are somewhat good. Ingredients is almost a great feature, but without knowing the amount of each it is not as valuable. In practice the precisoin is not good enough to be used to make actual recommendations, too many would be incorrect; much work is to be done on our next model! We will go back to the feature engineering stage to see if we can add more to increase precision to a useable and trustworthy level. If our final model still has a very poor precision we will have to think about if sacrificing some amount of precision for a huge gain in recall is worth it, that would mean having a much higher count of balanced predictions with slightly less confidence.
 
-<br>
-<br>
-
-<!-- example viz code
- <iframe src="assets/visualization_3.html" width=700 height=500 frameBorder=0></iframe> -->
-
+<!-- example viz code <iframe src="assets/visualization_3.html" width=700 height=500 frameBorder=0></iframe> -->
 <br>
 <br>
 
@@ -251,7 +242,6 @@ scikit learn</a>
  
  We got these values from several grid searches that we performed to optimize the precision of our predictions. It's important to remember that we optimized for precision since we believe that recommending a recipe as balanced when it actually is unbalanced can mislead to several health issues in the future. Our final model's precision is 0.50% while our baseline model's was 0.45%. This might not seem too much, but with the data we had available we consider that it's a really good precision. The trade off was that every time we increased our precision, our recall went down, but the score was usually constant around 89%.
 
-<br>
 <br>
 
 # Fairness Analysis
