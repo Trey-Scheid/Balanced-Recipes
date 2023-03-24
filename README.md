@@ -21,6 +21,7 @@ In <a href="https://trey-scheid.github.io/Recipe-Healthyness-Trends-by-season/" 
 For this we are going to analyze the columns `'ingredients'`, `'tags'` and many more to predict `'balanced'`.
 
 Other columns we might work with during and after the cleaning process are `'minutes'`,`'submitted'`,`'n_steps'`, and `'n_ingredients'`. They contain relevant information about the recipe that when extreme, raises some red flags to be explored.
+
 <br>
 
 # Framing The Problem
@@ -32,8 +33,6 @@ __Importance:__ There is practical use in knowing if a recipe is balanced or not
 __Metric:__ We think it is more important that we don't incorrectly classify a recipe as balanced when it is not, this might lead to recommendations to people for healthy recipes that are not actually healthy! These cases we want to avoid are false positives so we want to maximize precision. Some other metrics such as accuracy are missing a level of detail while the rest are including things that aren't critical such as false negatives in confusion matrices and F1 scores. 
 
 We will not be using any interactions (`'review'` or `'avg_rating'`) on the recipes since these are posted onto the recipe after they are posted to Food.com, we would like to classify before users try the recipes!
-
-<br>
 
 <br>
 
@@ -59,7 +58,6 @@ https://www.fda.gov/food/new-nutrition-facts-label/lows-and-highs-percent-daily-
 We will alter it slightly to better represent what is generally percieved as healthy and the more recent definition by the FDA. That means less than 5% sugar or fat is good, and greater than 20% protein is also healthy. We added a column to the data which is True or False based on the information from the nutrition column. 
 
 <br>
-<br>
 
 ### Additional Cleaning
 
@@ -68,15 +66,10 @@ While cleaning in the last project we checked out the distribution in many colum
 We looked closer into the ingredients column since it will be important for our prediction.
 
 We have seen that many ingredients are written in their plural and singular forms. This underrepresents their prescence in recipes since their count is distributed as two different ingredients. Therefore, to fix this we decided to strip all letters "s" from the end of the ingredients. For example this combined 'egg' and 'eggs' into one column 'egg'. 
-
-<br>
-
 <!-- Here are the first few rows of the cleaned dataframe:
 
 <iframe src="assets/sdatahead.html" width=900 height=210 frameBorder=0 title="cleaned dataset preview"></iframe> -->
 
-
-<br>
 <br>
 <br>
 
@@ -102,9 +95,6 @@ We will create these features using the sci-kit learn package transformers and d
 
 Checking for missing data we found only one column we are using had missing values: `'description'`. We will remove the recipes missing a description because there are so few.
 
-
-<br>
-<br>
 <br>
 
 # Baseline Model
@@ -119,8 +109,6 @@ Standardize (quantitative):
 One hot encode the unique values in the ingredients list (categorical)
 
 <br>
-<br>
-
 ### Data
 
 A good practice for a classification problem is to inspect your training data by class. We checked and found that only 10% of the recipes in our dataset are balanced!
@@ -136,10 +124,9 @@ We will try 2 and 3, but we need to do a few things first.
 
 First thing we must do, set aside a testing dataset. This is paramount, we can then test our models as we go on unseen data which will give us a better picture on how well it generalizes! We are splitting 15% for testing and made sure the split was stratified to ensure both sets have appropriate class balances that reflect the whole sample we were given. 
 
-`size of training set:  59967
-size of test set:  10583`
+`size of training set:  59967`<br>
+`size of test set:  10583`
 
-<br>
 <br>
 
 ### Preprocessing
@@ -148,7 +135,6 @@ Second, build a preprocessing pipeline. This is a lot to look at so we will brea
 
 The MultiLabelBinarizer creates a column for each unique ingredient and one hot encodes it for every recipe. Sci-Kit learn does not have pipeline support from our understanding. What we do is save the unique ingredients accross all recipes when fitted, then on all future transforms the output features dataframe will only include those columns (dropping any new ingredients, and adding 0 cols for the unseen ingredients from fit). Our class creates many warnings about fragmentation, thats why we suppressed them, it is not a perfect implementation but we avoided for loops :).
 
-<br>
 <br>
 
 ### Training
@@ -159,13 +145,13 @@ Remember we are going to try two different methods for dealing with the class im
 
 _Method 1:_ test models that handle unbalanced data
 
-**Precision Results**
-LogisticRegression     0.13169341532923354
-DecisionTreeClassifier 0.13376383763837638
-RandomForestClassifier 0.1486030089038993
-SVC                    0.14330474934036938
-XGBClassifier          0.0
-SGDClassifier          0.13209915280828366
+**Precision Results**<br>
+LogisticRegression     0.13169341532923354<br>
+DecisionTreeClassifier 0.13376383763837638<br>
+RandomForestClassifier 0.1486030089038993<br>
+SVC                    0.14330474934036938<br>
+XGBClassifier          0.0<br>
+SGDClassifier          0.13209915280828366<br>
 
 Overall the precision is dissapointingly low. Precision is a proportion so it ranges from [0, 1] where 1 would be only correct positive predictions and 0 is none. Almost all the models performed at the same level which makes it difficult to reason why to tune one over another, maybe we will see different results with resampling.
 
@@ -179,17 +165,16 @@ Undersampling is when we randomly choose n rows to keep from the larger class (n
 
 Oversampling is similar except to achieve balance we bootstrap (sample with replacement) from the smaller class, balanced, until they are equal sizes.
 
-**Undersampled Precision**
-KNeighborsClassifier      0.12097476066144473
-GaussianProcessClassifier 0.14451656986675776
-
-**Oversampled Precision**
-KNeighborsClassifier      0.12097476066144473
-GaussianProcessClassifier 0.14451656986675776
+**Undersampled Precision**<br>
+KNeighborsClassifier      0.12097476066144473<br>
+GaussianProcessClassifier 0.14451656986675776<br>
+<br>
+**Oversampled Precision**<br>
+KNeighborsClassifier      0.12097476066144473<br>
+GaussianProcessClassifier 0.14451656986675776<br>
 
 Due to "high" precision in comparison to the others, and very fast training time which we observed, we chose the RandomForestClassifier model to continue with and tune. We also did a few runs and some others that performed as well were not as consistent.
 
-<br>
 <br>
 
 ### Fine Tuning
@@ -198,22 +183,22 @@ There are many hyperparameters to tune between the preprocessing pipeline and th
 
 The searcher takes in a dict of hyperparameters which describe paths down to the correct pipeline item and param then a list of options to try. We will define these then run it. We are using a new Halving grid search that uses subsets of data to narrow its search at the start, with a large dataset and limited compute resources we have to make sacrifices! That and only using 3 cross validation folds, mean that we are less confident in the final parameters that the searcher finds. We also are not going to be giving it many to search through so those other issues may not be as significant anyway. 
 
-_tune preprocessor_
-{'preprocessor__ingredients__select_percentile__percentile': 100,
- 'preprocessor__ingredients__variance_selector__threshold': 0.004975000000000005}
+_tune preprocessor_<br>
+{'preprocessor__ingredients__select_percentile__percentile': 100,<br>
+ 'preprocessor__ingredients__variance_selector__threshold': 0.004975000000000005}<br>
  
  The first thing to notice, percentile is 100, so it is saying to keep all the columns. Going forward we will remove this transformer entirely. If we had more time we would test the performance with a seacher that performs SelectPercentile before VarianceThreshold, or simply without it, to see which is better.
 
-**Tuned Precision**
-preproc_tuned 0.4358974358974359
-model_tuned   0.48863636363636365
+**Tuned Precision**<br>
+preproc_tuned 0.4358974358974359<br>
+model_tuned   0.48863636363636365<br>
 
 Interestingly the preprocessing had a much larger difference, either way in total we see big improvements to precision. This was the goal! We only tuned 3 hyperparameters total, with more resources you could test many more combinations.
 
-Double check results
-True Precision: 0.45121951219512196
-True Recall:    0.03259911894273128
-Accuracy:       0.8919965983180572
+Double check results<br>
+True Precision: 0.45121951219512196<br>
+True Recall:    0.03259911894273128<br>
+Accuracy:       0.8919965983180572<br>
 
 <br>
 
@@ -225,15 +210,12 @@ When using Random Forests or Decision Trees people often talk about the paramete
 Eduardo and I were eating some chocolate bites while making this, we decided to see what the prediction would be with some partially made up data. They were Meiji Chocorooms, we tested our model trained on all available data and it predicted that balanced was false, this was correct! There was very high %DV sugar and saturated fat so it was not balanced. This was not as challenging as correctly identifying a balanced recipe so we can give it an example like that as well. We passed in a Spinash Quiche recipe. The butter, heavy cream and cheese put this recipe well over the fat daily value. That makes this recipe not balanced but either prediction would seem reasonable. The model predicted False again, which was correct. This is an excellent example of why our model might struggle when even a human can't decide if the recipe seems balanced. Binary classification in this case always has a correct answer by definition but when using the model we need to remember that theres always a spectrum in reality of how balanced a recipe is.
 
 <br>
-<br>
-<br>
 
 ### Base Model Breakdown
 
 After trying many models and many hyperparamters we ended with a Random Forest Classifier using 50 trees and gini. We standardized three quantitative variables: `'minutes'`, `'n_steps'`, and `'n_ingredients'`. We had one categorical variable `'ingredients'` which we used an altered multilabelBinarizer to OneHotEncode each unique ingredient which essentially becomes its own nominal boolean variable. That encoding was tricky because we had to account for there being different pools of ingredients at the time of model fitting on the training data and when transforming to testing data. This also created thousands of columns (almost 10K from training) which using a variance selector we narrowed down to ones with a variance higher than the threshold therefore having an ingredient not too popular or unpopular.
 
 We got two types of results: very low precision with decent recall and accuracy, and mediocre precision with abismal recall and mediocre accuracy. Because the worst mistake we can make is to recommend someone an unbalanced recipe and tell them it is balanced, we are prioritizing precision and tuned or models to optimize that. This came at the expense of only capturing a small portion of all the balanced recipes in our dataset therefore missing out on a lot of healthy recommendations. It is hard to say if there are any patterns in the ones we did or did not capture but that would be cool to explore. Given the 4 input variables (3 considering n_ingredients could be engineered) did not have a ton of information that clearly or directly relates to the GDP from a theoretical perspective I believe the results are somewhat good. Ingredients is almost a great feature, but without knowing the amount of each it is not as valuable. In practice the precisoin is not good enough to be used to make actual recommendations, too many would be incorrect; much work is to be done on our next model! We will go back to the feature engineering stage to see if we can add more to increase precision to a useable and trustworthy level. If our final model still has a very poor precision we will have to think about if sacrificing some amount of precision for a huge gain in recall is worth it, that would mean having a much higher count of balanced predictions with slightly less confidence.
-
 
 <br>
 <br>
