@@ -227,23 +227,26 @@ We got two types of results: very low precision with decent recall and accuracy,
 <br>
 
 # Final Model
-<br>
 
 For our final model we decided to add three specific features. First, the quarter in which the recipe was submitted. We believe that the quarter of submission is a good way of capturing the trends of balanced and unbalanced food consumption during the year. It could be the case that more recipes in quarter 1 tend to be balanced since people are motivated at the beginning of the year.
 
 We also though of adding description length. We decided this because usually recipes with longer description tend to be more elaborate which most of the time tend to be more unbalanced compared to simple recipes that don't require that much description. Think about it, you can it's natural to give a much longer description to a cookie sundae than to a plate of chicken and rice.
+
+The third one was the tag column which we applied the same process as we did for the ingredients column. We thought it was important to add this column because some of the tags were like `'dietary'` that could cluster these recipes into groups that might be balanced or unbalanced.
 
 In general adding these features helped us capture more information of the data generating process that we consider helpful for our model. Another technique we used was OneHotEncoding and PCA. We used these techniques because OHE helped us get information from a list of strings while PCA summarized all this information into fewer columns. Reducing the dimensionality of our data improved a lot our model in all the aspects.
 
 We decided to keep using RandomForestClassifier() as our model based on the previous experimentation from the baseline model section.
 
 > A random forest is a meta estimator that fits a number of decision tree classifiers on various sub-samples of the dataset and uses averaging to improve the predictive accuracy and control over-fitting. The sub-sample size is controlled with the max_samples parameter if bootstrap=True (default), otherwise the whole dataset is used to build each tree.
+
 Source: <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.ConfusionMatrixDisplay.html" target="_blank">
 scikit learn</a>
 
  We chose to use the following hyperparameters:
 
  PCA(n_components = 8)
+
  RandomForestClassifier(n_estimators = 32, criterion = 'gini', class_weight='balanced')
  
  We got these values from several grid searches that we performed to optimize the precision of our predictions. It's important to remember that we optimized for precision since we believe that recommending a recipe as balanced when it actually is unbalanced can mislead to several health issues in the future. Our final model's precision is 0.50% while our baseline model's was 0.45%. This might not seem too much, but with the data we had available we consider that it's a really good precision. The trade off was that every time we increased our precision, our recall went down, but the score was usually constant around 89%.
@@ -252,7 +255,6 @@ scikit learn</a>
 <br>
 
 # Fairness Analysis
-<br>
 
 For our fairness analysis we are going to analyze the `precision parity` of the recipes with the `'occasion'` tag and the ones without it. Therefore, our Group X is recipes with the `'occasion'` tag, and Group Y is the recipes without the `'occasion'` tag, all these coming from the X_test data.
 
