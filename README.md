@@ -1,5 +1,5 @@
 <!-- Eduardo Spiegel and Trey Scheid -->
-<img src="assets/healthy_food.png" alt="eatyoveggies" height=546 style="display: block; margin: 0 auto">
+<img src="assets/healthy_food.png" alt="eatyoveggies" height=480 style="display: block; margin: 0 auto">
 Photo by <a href="https://unsplash.com/@hermez777?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Hermes Rivera</a> on <a href="https://unsplash.com/photos/Ww8eQWjMJWk?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
   
 <!-- # The Recipe for Success: Predicting Balanced Meals
@@ -66,7 +66,12 @@ While cleaning in the last project we checked out the distribution in many colum
 We looked closer into the ingredients column since it will be important for our prediction.
 
 We have seen that many ingredients are written in their plural and singular forms. This underrepresents their prescence in recipes since their count is distributed as two different ingredients. Therefore, to fix this we decided to strip all letters "s" from the end of the ingredients. For example this combined 'egg' and 'eggs' into one column 'egg'. 
-<!-- Here are the first few rows of the cleaned dataframe: <iframe src="assets/sdatahead.html" width=900 height=210 frameBorder=0 title="cleaned dataset preview"></iframe> -->
+
+Here are a few rows of the cleaned dataframe: 
+
+<iframe src="assets/sdatahead.html" width=900 height=210 frameBorder=0 title="cleaned dataset preview"></iframe>
+(70550, 10)
+
 <br>
 <br>
 
